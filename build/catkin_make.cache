@@ -1,0 +1,2 @@
+ros_astra_camera:rosbot_ekf:rplidar_ros
+-DCATKIN_DEVEL_PREFIX=/home/husarion/rosbot-pr-ws/devel -DCMAKE_INSTALL_PREFIX=/home/husarion/rosbot-pr-ws/install -G Unix Makefiles
