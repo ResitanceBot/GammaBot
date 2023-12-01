@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rosconsole
   sensor_msgs
+  tf
 )
 
 include_directories(
