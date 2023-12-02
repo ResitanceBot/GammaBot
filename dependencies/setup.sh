@@ -17,4 +17,4 @@ if [ "$user_name" != "husarion" ]; then
   sudo apt install libgoogle-glog-dev
 fi
 
-printf 'Setup process finished OK :D\n\n'
+printf '\n\nSetup process finished OK :D\n\n'
