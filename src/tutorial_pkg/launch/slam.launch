@@ -1,0 +1,29 @@
+<launch>
+    <!-- all.launch (rosbot_ekf) -->
+    <include file="$(find rosbot_ekf)/launch/all.launch" />
+    <!-- TELEOP -->
+    <!-- <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop_node" output="screen"/> -->
+    <!-- LIDAR -->
+    <include file="$(find rplidar_ros)/launch/rplidar_a2m12.launch" />
+    <!-- RVIZ -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tutorial_pkg)/rviz/tests.rviz" />
+    <!-- GMAPPING -->
+    <include file="$(find tutorial_pkg)/launch/gmapping.launch" />
+    <!--
+    <node pkg="gmapping" type="slam_gmapping" name='gmapping_node' output='log'>
+        <param name="base_frame" value="base_link"/>
+        <param name="odom_frame" value="odom"/>
+        <param name="delta" value="0.01"/>
+        <param name="xmin" value="-20"/>
+        <param name="ymin" value="-20"/>
+        <param name="xmax" value="20"/>
+        <param name="ymax" value="20"/>
+        <param name="maxUrange" value="5"/>
+        <param name="map_update_interval" value="1"/>
+        <param name="linearUpdate" value="0.05"/>
+        <param name="angularUpdate" value="0.05"/>
+        <param name="temporalUpdate" value="0.1"/>
+        <param name="particles" value="100"/>
+    </node>
+    -->
+</launch>
