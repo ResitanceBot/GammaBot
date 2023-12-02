@@ -4,14 +4,31 @@
       {
         "label": "Compile code",
         "type": "shell",
-        "command": "cd ~/rosbot-pr-ws/ & catkin_make",
-        "windows": {
-          "command": ".\\scripts\\test.cmd"
-        },
-        "group": "test",
+        "command": "cd ${workspaceFolder}; source /opt/ros/noetic/setup.sh; catkin_make",
+        "group":"build",
         "presentation": {
           "reveal": "always",
-          "panel": "new"
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "Run main launch",
+        "type": "shell",
+        "command": "cd ${workspaceFolder}; source devel/setup.sh; roslaunch rosbot_ekf all.launch",
+        "group":"build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "Setup environment",
+        "type":"shell",
+        "command": "cd ${workspaceFolder}/dependencies; bash setup.sh",
+        "group":"build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "shared"
         }
       }
     ]
