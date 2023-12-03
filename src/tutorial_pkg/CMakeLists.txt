@@ -26,6 +26,7 @@ include_directories(
 add_executable(tutorial_pkg_node src/tutorial_pkg_node.cpp)
 add_executable(action_controller_node src/action_controller.cpp)
 add_executable(drive_controller_node src/drive_controller.cpp)
+add_executable(img_control_node src/img_control.cpp)
 
 target_link_libraries(tutorial_pkg_node
   ${catkin_LIBRARIES}
@@ -38,6 +39,10 @@ target_link_libraries(action_controller_node
 
 target_link_libraries(drive_controller_node
   ${catkin_LIBRARIES}
+)
+
+target_link_libraries(img_control_node
+    ${catkin_LIBRARIES}
 )
 
 install(DIRECTORY launch
