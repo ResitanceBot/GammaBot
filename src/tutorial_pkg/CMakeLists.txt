@@ -30,6 +30,7 @@ add_executable(action_controller_node src/action_controller.cpp)
 add_executable(drive_controller_node src/drive_controller.cpp)
 add_executable(img_control_node src/img_control.cpp)
 add_executable(follow_img_node src/follow_img.cpp)
+add_executable(follow_img_mov_node src/follow_img_mov.cpp)
 
 target_link_libraries(tutorial_pkg_node
   ${catkin_LIBRARIES}
@@ -49,6 +50,11 @@ target_link_libraries(img_control_node
 )
 
 target_link_libraries(follow_img_node
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)
+
+target_link_libraries(follow_img_mov_node
     ${catkin_LIBRARIES}
     ${OpenCV_LIBRARIES}
 )
