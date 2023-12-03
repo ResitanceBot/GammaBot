@@ -2,6 +2,7 @@
 
     <arg name="teach" default="false"/>
     <arg name="control" default="false"/>
+    <arg name="follow" default="false"/>
 
     <!-- ROSbot -->
     <include file="$(find astra_camera)/launch/astra.launch"/>
@@ -17,6 +18,12 @@
     <group if="$(arg control)">
         <include file="$(find rosbot_ekf)/launch/all.launch" />
         <node pkg="tutorial_pkg" type="img_control_node" name="img_control_node"/>
+    </group>
+
+    <!-- Follow object -->
+    <group if="$(arg follow)">
+        <include file="$(find rosbot_ekf)/launch/all.launch" />
+        <node pkg="tutorial_pkg" type="follow_img_node" name="follow_img_node"/>
     </group>
 
 </launch>

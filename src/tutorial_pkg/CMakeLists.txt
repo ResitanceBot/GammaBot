@@ -15,7 +15,9 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package( OpenCV REQUIRED )
 
-catkin_package()
+catkin_package(
+  CATKIN_DEPENDS
+)
 
 include_directories(
   include
@@ -27,6 +29,7 @@ add_executable(tutorial_pkg_node src/tutorial_pkg_node.cpp)
 add_executable(action_controller_node src/action_controller.cpp)
 add_executable(drive_controller_node src/drive_controller.cpp)
 add_executable(img_control_node src/img_control.cpp)
+add_executable(follow_img_node src/follow_img.cpp)
 
 target_link_libraries(tutorial_pkg_node
   ${catkin_LIBRARIES}
@@ -43,6 +46,11 @@ target_link_libraries(drive_controller_node
 
 target_link_libraries(img_control_node
     ${catkin_LIBRARIES}
+)
+
+target_link_libraries(follow_img_node
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
 )
 
 install(DIRECTORY launch
