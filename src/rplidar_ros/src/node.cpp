@@ -59,10 +59,15 @@ void broadcastLaserFrame() {
   tf::Transform transform;
   transform.setOrigin(tf::Vector3(0.03F, 0.0F, 0.03F));
   tf::Quaternion q;
-  q.setRPY(0, 0, 0);
+  q.setRPY(0, 0, 3.1415);
   transform.setRotation(q);
   br.sendTransform(
       tf::StampedTransform(transform, ros::Time::now(), "base_link", "laser"));
+  transform.setOrigin(tf::Vector3(0.0F, 0.0F, 0.0F));
+  q.setRPY(0, 0, 0);
+  transform.setRotation(q);
+  br.sendTransform(
+      tf::StampedTransform(transform, ros::Time::now(), "map", "odom"));
 }
 
 void publish_scan(ros::Publisher *pub,
