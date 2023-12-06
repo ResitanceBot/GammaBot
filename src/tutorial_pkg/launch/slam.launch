@@ -6,7 +6,7 @@
     <!-- LIDAR -->
     <include file="$(find rplidar_ros)/launch/rplidar_a2m12.launch" />
     <!-- RVIZ -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tutorial_pkg)/rviz/tests.rviz" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tutorial_pkg)/rviz/slam.rviz" />
     <!-- GMAPPING -->
     <include file="$(find tutorial_pkg)/launch/gmapping.launch" />
     <!-- <node pkg="gmapping" type="slam_gmapping" name='gmapping_node' output='log'>
