@@ -1,0 +1,36 @@
+<launch>
+
+    <arg name="teach" default="false"/>
+    <arg name="control" default="false"/>
+    <arg name="follow" default="false"/>
+    <arg name="follow_mov" default="false"/>
+
+    <!-- ROSbot -->
+    <include file="$(find astra_camera)/launch/astra.launch"/>
+
+    <!-- Object detection -->
+    <node pkg="find_object_2d" type="find_object_2d" name="find_object_2d">
+        <remap from="image" to="/camera/color/image_raw"/>
+        <param name="gui" value="$(arg teach)"/>
+        <param name="objects_path" value="$(find tutorial_pkg)/image_rec/"/>
+    </node>
+
+    <!-- Control -->
+    <group if="$(arg control)">
+        <include file="$(find rosbot_ekf)/launch/all.launch" />
+        <node pkg="tutorial_pkg" type="img_control_node" name="img_control_node"/>
+    </group>
+
+    <!-- Follow object (orientation)-->
+    <group if="$(arg follow)">
+        <include file="$(find rosbot_ekf)/launch/all.launch" />
+        <node pkg="tutorial_pkg" type="follow_img_node" name="follow_img_node"/>
+    </group>
+
+    <!-- Follow object (orientation + approach)-->
+    <group if="$(arg follow_mov)">
+        <include file="$(find rosbot_ekf)/launch/all.launch" />
+        <node pkg="tutorial_pkg" type="follow_img_mov_node" name="follow_img_mov_node"/>
+    </group>
+
+</launch>

@@ -44,6 +44,7 @@
 
 #define DEG2RAD(x) ((x)*M_PI / 180.)
 #define RESET_TIMEOUT 15 // 15 second
+#define PI 3.1415926535897932
 
 enum {
   LIDAR_A_SERIES_MINUM_MAJOR_ID = 0,
@@ -59,7 +60,7 @@ void broadcastLaserFrame() {
   tf::Transform transform;
   transform.setOrigin(tf::Vector3(0.03F, 0.0F, 0.03F));
   tf::Quaternion q;
-  q.setRPY(0, 0, 0);
+  q.setRPY(0, 0, PI);
   transform.setRotation(q);
   br.sendTransform(
       tf::StampedTransform(transform, ros::Time::now(), "base_link", "laser"));
