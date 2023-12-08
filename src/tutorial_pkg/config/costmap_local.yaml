@@ -10,3 +10,4 @@ local_costmap:
     width: 2.5
     height: 2.5
     resolution: 0.02
+    
