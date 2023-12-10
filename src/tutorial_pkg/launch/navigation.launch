@@ -26,7 +26,18 @@
         <param name="initial_pose_a" value="0.0"/>
     </node>
 
+    <!-- Path planning -->
+   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+      <rosparam file="$(find tutorial_pkg)/config/move_base.yaml" command="load" />
+      <rosparam file="$(find tutorial_pkg)/config/costmap_common.yaml" command="load" ns="global_costmap" /> 
+      <rosparam file="$(find tutorial_pkg)/config/costmap_common.yaml" command="load" ns="local_costmap" />
+      <rosparam file="$(find tutorial_pkg)/config/costmap_global.yaml" command="load" /> 
+      <rosparam file="$(find tutorial_pkg)/config/costmap_local.yaml" command="load" />
+      <rosparam file="$(find tutorial_pkg)/config/planner_global.yaml" command="load" />
+      <rosparam file="$(find tutorial_pkg)/config/planner_local.yaml" command="load" />
+   </node>
+
     <!-- RVIZ -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tutorial_pkg)/rviz/localization.rviz" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tutorial_pkg)/rviz/navigation.rviz" />
 
 </launch>

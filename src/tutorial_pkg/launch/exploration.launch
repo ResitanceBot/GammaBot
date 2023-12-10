@@ -1,5 +1,31 @@
 <launch>
-	<node pkg="explore_lite" type="explore" respawn="false" name="explore" output="screen">
-		<rosparam file="$(find tutorial_pkg)/config/exploration.yaml" command="load" />
-	</node>
+
+    <!-- all.launch (rosbot_ekf) -->
+    <include file="$(find rosbot_ekf)/launch/all.launch" />
+
+    <!-- LIDAR -->
+    <include file="$(find rplidar_ros)/launch/rplidar_a2m12.launch" />
+
+    <!-- SLAM - GMAPPING -->
+    <include file="$(find tutorial_pkg)/launch/gmapping.launch" />
+
+    <!-- Path planning -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+        <rosparam file="$(find tutorial_pkg)/config/move_base.yaml" command="load" />
+        <rosparam file="$(find tutorial_pkg)/config/costmap_common.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find tutorial_pkg)/config/costmap_common.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find tutorial_pkg)/config/costmap_global.yaml" command="load" />
+        <rosparam file="$(find tutorial_pkg)/config/costmap_local.yaml" command="load" />
+        <rosparam file="$(find tutorial_pkg)/config/planner_global.yaml" command="load" />
+        <rosparam file="$(find tutorial_pkg)/config/planner_local.yaml" command="load" />
+    </node>
+
+    <!-- Exploration - explore_lite -->
+    <node pkg="explore_lite" type="explore" respawn="true" name="explore" output="screen">
+        <rosparam file="$(find tutorial_pkg)/config/exploration.yaml" command="load" />
+    </node>
+
+    <!-- RVIZ -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tutorial_pkg)/rviz/exploration.rviz" />
+
 </launch>
