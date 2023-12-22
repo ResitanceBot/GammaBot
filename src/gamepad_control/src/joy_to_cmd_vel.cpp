@@ -95,13 +95,15 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "joy_to_cmd_vel");
 
     ros::NodeHandle nh;
-    pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-    sub = nh.subscribe("joy", 10, joyCallback);
+    pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 100);
+    sub = nh.subscribe("joy", 100, joyCallback);
+    ros::Rate r(50);
 
     while (ros::ok())
     {
         pub.publish(twist);
         ros::spinOnce();
+        r.sleep();
     }
 
     return 0;
