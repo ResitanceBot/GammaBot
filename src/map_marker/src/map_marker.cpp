@@ -8,7 +8,8 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "joy_to_cmd_vel");
 
     ros::NodeHandle nh;
-    ros::Publisher vis_pub = node_handle.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
+    ros::Publisher vis_pub = nh.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
+
 visualization_msgs::Marker marker;
 marker.header.frame_id = "base_link";
 marker.header.stamp = ros::Time();
@@ -30,8 +31,6 @@ marker.color.a = 1.0; // Don't forget to set the alpha!
 marker.color.r = 0.0;
 marker.color.g = 1.0;
 marker.color.b = 0.0;
-//only if using a MESH_RESOURCE marker type:
-marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
 
     ros::Rate r(50);
 
