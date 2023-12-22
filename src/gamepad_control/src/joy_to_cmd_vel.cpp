@@ -39,9 +39,10 @@ float SPEED_ANT = SPEED;
 ros::Publisher pub;
 ros::Subscriber sub;
 
+geometry_msgs::Twist twist;
+
 void joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
-    geometry_msgs::Twist twist;
 
     // AJUSTE SPEED
     SPEED_ANT = SPEED;
@@ -66,6 +67,9 @@ void joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
     }
 
     // FORWARD / BACKWARD (Avance/Retroceso)
+    twist.linear.x = 0;
+    twist.angular.z = 0; 
+    
     if(joy->axes[JOY_L_V] < -BREAKOUT_JOYSTICKS) twist.linear.x = SPEED * float(-1.0);
     else if(joy->axes[JOY_L_V] > BREAKOUT_JOYSTICKS) twist.linear.x = SPEED * float(1.0);
     // TURN LEFT / RIGHT (Rotacion)
@@ -84,7 +88,6 @@ void joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
     // SPEED
     if(SPEED != SPEED_ANT) printf("SPEED = %f \n", SPEED);
 
-    pub.publish(twist);
 }
 
 int main(int argc, char** argv)
@@ -97,6 +100,7 @@ int main(int argc, char** argv)
 
     while (ros::ok())
     {
+        pub.publish(twist);
         ros::spinOnce();
     }
 
