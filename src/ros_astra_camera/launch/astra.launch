@@ -90,4 +90,5 @@
             <remap from="/$(arg camera_name)/depth/color/points" to="/$(arg camera_name)/depth_registered/points"/>
         </node>
     </group>
+    <node name="image_rt_compressor" pkg="image_transport" type="republish" args="raw in:=/camera/color/image_raw compressed out:=/camera/color/image_compressed" />
 </launch>
