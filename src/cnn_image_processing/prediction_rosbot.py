@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from roboflow import Roboflow
 import cv2
 import openni
@@ -13,7 +15,7 @@ ctx = openni.Context()
 ctx.init()
 
 # Abre la cámara Astra (ajusta el índice del dispositivo según sea necesario)
-dev = ctx.devices[1]
+dev = ctx.devices[0]
 depth_stream = dev.create_depth_stream()
 depth_stream.start()
 
