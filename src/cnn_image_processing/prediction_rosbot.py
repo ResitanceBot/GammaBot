@@ -1,54 +1,63 @@
 #!/usr/bin/env python3
-
+import rospy
 from roboflow import Roboflow
+from cv_bridge import CvBridge
+from sensor_msgs.msg import Image
 import cv2
-import openni
 import matplotlib.pyplot as plt
-import numpy as np
 
-rf = Roboflow(api_key="GGxqvKnwaHYEl42XKsup")
-project = rf.workspace().project("fire-detection-for-khkt")
-model = project.version(3).model
+class Nodo(object):
+    def __init__(self):
+        # Params
+        self.image = None
+        self.br = CvBridge()
+        # Node cycle rate (in Hz).
+        self.loop_rate = rospy.Rate(10)
 
-# Initialize OpenNI context and depth stream
-ctx = openni.Context()
-ctx.init()
+        # Subscribers
+        rospy.Subscriber("/camera/color/image_raw",Image,self.callback)
 
-# Abre la cámara Astra (ajusta el índice del dispositivo según sea necesario)
-dev = ctx.devices[0]
-depth_stream = dev.create_depth_stream()
-depth_stream.start()
+        # Publishers
+        self.pub = rospy.Publisher('/test/camera_pub', Image,queue_size=10)
 
-while True:
-    # Captura un cuadro desde la cámara Astra
-    frame = depth_stream.read_frame()
-    frame_data = frame.get_buffer_as_uint16()
-    frame_array = np.ndarray((frame.height, frame.width), dtype=np.uint16, buffer=frame_data)
+        self.rf = Roboflow(api_key="GGxqvKnwaHYEl42XKsup")
+        self.project = self.rf.workspace().project("fire-detection-for-khkt")
+        self.model = self.project.version(3).model
 
-    # Convierte el cuadro a formato RGB
-    frame_rgb = cv2.cvtColor(frame_array, cv2.COLOR_GRAY2RGB)
+    def callback(self, msg):
+        rospy.loginfo('Image received...')
+        self.image = self.br.imgmsg_to_cv2(msg)
 
-    # Realiza predicciones en el cuadro
-    predictions = model.predict(frame_rgb, confidence=18, overlap=30).json()
 
-    # Imprime o procesa las predicciones según sea necesario
-    print(predictions)
+    def start(self):
+        rospy.loginfo("Timing images")
+        #rospy.spin()
+        while not rospy.is_shutdown():
+            rospy.loginfo('processing image')
+            #br = CvBridge()
+            image_processed = self.image
+            if self.image is not None:
+                rospy.loginfo('alo alo image')
+                    # Realiza predicciones en el cuadro
+                predictions = self.model.predict(image_processed, confidence=18, overlap=30).json()
 
-    # Dibuja cajas delimitadoras en el cuadro según las predicciones
-    for prediction in predictions["predictions"]:
-        xmin, ymin, xmax, ymax = (
-            int(prediction["x"]),
-            int(prediction["y"]),
-            int(prediction["x"] + prediction["width"]),
-            int(prediction["y"] + prediction["height"]),
-        )
-        cv2.rectangle(frame_rgb, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
+                # Imprime o procesa las predicciones según sea necesario
+                print(predictions)
 
-    # Muestra el cuadro con las predicciones utilizando matplotlib
-    plt.imshow(frame_rgb)
-    plt.show()
-
-# Detiene la transmisión de profundidad y libera la cámara Astra
-depth_stream.stop()
-depth_stream.destroy()
-ctx.shutdown()
+                # Dibuja cajas delimitadoras en el cuadro según las predicciones
+                for prediction in predictions["predictions"]:
+                    xmin, ymin, xmax, ymax = (
+                        int(prediction["x"]),
+                        int(prediction["y"]),
+                        int(prediction["x"] + prediction["width"]),
+                        int(prediction["y"] + prediction["height"]),
+                    )
+                    cv2.rectangle(image_processed, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
+                #cv2.imshow("Imagen", self.image)
+                self.pub.publish(self.br.cv2_to_imgmsg(image_processed, encoding='rgb8'))
+            self.loop_rate.sleep()
+            
+if __name__ == '__main__':
+    rospy.init_node("astra_image_processor", anonymous=True)
+    my_node = Nodo()
+    my_node.start()
