@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+# Coge imagen de depth y aplica filtro para eliminar objetos mas lejanos
+
 import rospy
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
