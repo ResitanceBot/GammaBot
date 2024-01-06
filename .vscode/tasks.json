@@ -4,7 +4,7 @@
       {
         "label": "Compile code",
         "type": "shell",
-        "command": "cd ${workspaceFolder}; source /opt/ros/noetic/setup.sh; catkin_make; source devel/setup.sh",
+        "command": "cd ${workspaceFolder}; source /opt/ros/noetic/setup.sh; catkin_make; source devel/setup.sh; rospack list-names > dependencies/ros_pkg_list.txt",
         "group":"build",
         "presentation": {
           "reveal": "always",
