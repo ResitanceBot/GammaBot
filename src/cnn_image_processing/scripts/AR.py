@@ -5,7 +5,7 @@ import keyboard
 import imageio
 
 # Ruta del gif
-gif_path = r'C:\Users\carlo\Downloads\fire-png-gif-489.gif'
+gif_path = r'/home/husarion/GammaBot/src/cnn_image_processing/resources/fire-png-gif-489.gif'
 gif = imageio.get_reader(gif_path)
 gif_length = gif.get_length()
 frame_index = 0
