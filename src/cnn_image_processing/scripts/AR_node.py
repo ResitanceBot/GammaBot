@@ -1,112 +1,112 @@
 #!/usr/bin/env python3
+
 import rospy
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
-import matplotlib.pyplot as plt
 import cv2 as cv
 import numpy as np
-# import keyboard
 import imageio
 
 class Nodo(object):
     def __init__(self):
-        # Params
+        # Parámetros
         self.image = None
         self.br = CvBridge()
-        # Node cycle rate (in Hz).
+        # Tasa de ciclo del nodo (en Hz).
         self.loop_rate = rospy.Rate(10)
 
-        # Subscribers
-        rospy.Subscriber("/camera/color/image_raw",Image,self.callback)
+        # Subscriptores
+        rospy.Subscriber("/camera/color/image_raw", Image, self.callback)
 
-        # Publishers
-        self.pub = rospy.Publisher('/ar_image', Image,queue_size=10)
+        # Publicadores
+        self.pub = rospy.Publisher('/ar_image', Image, queue_size=10)
 
+        # Lista de códigos ArUco de interés
+        self.aruco_codes = [0, 1, 2]  # IDs de los códigos ArUco de interés
 
-    def callback(self, msg):
-        #rospy.loginfo('Image received...')
-        self.image = self.br.imgmsg_to_cv2(msg)
+        # Lista de rutas de los GIFs asociados a cada código ArUco
+        self.gif_paths = [
+            r'/home/husarion/GammaBot/src/cnn_image_processing/resources/0.gif',
+            r'/home/husarion/GammaBot/src/cnn_image_processing/resources/1.gif',
+            r'/home/husarion/GammaBot/src/cnn_image_processing/resources/2.gif'
+        ] 
 
-
-    def start(self):
-        
-        rospy.loginfo('Starting AR node...')
-        
-        # Ruta del gif
-        gif_path = r'/home/husarion/GammaBot/src/cnn_image_processing/resources/3.gif'
-        gif = imageio.get_reader(gif_path)
-        gif_length = gif.get_length()
-        frame_index = 0
+        # Cargar los GIFs asociados a cada código ArUco
+        self.gifs = [imageio.get_reader(path) for path in self.gif_paths]
+        self.gif_lengths = [gif.get_length() for gif in self.gifs]
+        self.frame_indices = [0] * len(self.gifs)
 
         # Crear el objeto ArUco
-        dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
-        parameters = cv.aruco.DetectorParameters()
-        detector = cv.aruco.ArucoDetector(dictionary, parameters)
-        
-        # Dimensiones conocidas del marcador
-        marker_length = 0.1  # Ajusta según el tamaño real del marcador en metros
+        self.dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
+        self.parameters = cv.aruco.DetectorParameters()
+        self.detector = cv.aruco.ArucoDetector(self.dictionary, self.parameters)
 
-        mtx = None
-        dist = None
+        # Dimensiones conocidas del marcador
+        self.marker_length = 0.1  # Ajusta según el tamaño real del marcador en metros
+
+    def callback(self, msg):
+        self.image = self.br.imgmsg_to_cv2(msg)
+
+    def start(self):
+        rospy.loginfo('Starting AR node...')
         
         while not rospy.is_shutdown():
-            
             frame = self.image
             
             if frame is not None:
                 # Detección de marcadores ArUco
-                markerCorners, markerIds, _ = detector.detectMarkers(frame)
-                #frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+                markerCorners, markerIds, _ = self.detector.detectMarkers(frame)
                 frame_ = frame.copy()
-                if markerIds is not None and 0 in markerIds:
-                    # Obtener la posición del primer marcador detectado
-                    index = list(markerIds).index(0)
+                
+                for code_idx, aruco_code in enumerate(self.aruco_codes):
+                    if markerIds is not None and aruco_code in markerIds:
+                        # Obtener la posición del marcador detectado
+                        idx = list(markerIds).index(aruco_code)
+                        img_points = markerCorners[idx][0]
 
-                    # Obtener puntos 2D del marcador detectado
-                    img_points = markerCorners[index][0]
+                        # Obtener las dimensiones del GIF y ajustar su posición
+                        gif_height = int(img_points[:, 0].max() - img_points[:, 0].min()) * 4
+                        gif_width = int(img_points[:, 1].max() - img_points[:, 1].min()) * 4
+                        x, y = np.int32(img_points.mean(axis=0))
 
-                    # Obtener las dimensiones del gif y ajustar su posición
-                    gif_height = int(img_points[:,0].max()-img_points[:,0].min())*4
-                    gif_width = int(img_points[:,1].max()-img_points[:,1].min())*4
-                    x,y = np.int32(img_points.mean(axis=0))
+                        # Leer el siguiente fotograma del GIF
+                        gif_frame = self.gifs[code_idx].get_data(self.frame_indices[code_idx])
+                        self.frame_indices[code_idx] += 1
+                        self.frame_indices[code_idx] = self.frame_indices[code_idx] % self.gif_lengths[code_idx]
 
-                    # Leer el siguiente fotograma del gif
-                    gif_frame = gif.get_data(frame_index)
-                    frame_index += 1
-                    frame_index = frame_index%gif_length
+                        # Redimensionar el GIF al tamaño del marcador
+                        gif_frame = cv.resize(gif_frame, (gif_width, gif_height))
 
-                    # Redimensionar el gif al tamaño del marcador
-                    gif_frame = cv.resize(gif_frame, (gif_width, gif_height))
+                        # Zona a sustituir
+                        a = max(0, int(np.floor(y - 3 / 4 * gif_height)))
+                        b = min(frame.shape[0], int(np.floor(y + 1 / 4 * gif_height)))
+                        c = max(0, int(np.floor(x - 1 / 2 * gif_width)))
+                        d = min(frame.shape[1], int(np.floor(x + 1 / 2 * gif_width)))
 
-                    # Zona a sustituir
-                    a = max(0,int(np.floor(y-3/4*gif_height)))
-                    b = min(frame.shape[0],int(np.floor(y+1/4*gif_height)))
-                    c = max(0,int(np.floor(x-1/2*gif_width)))
-                    d = min(frame.shape[1],int(np.floor(x+1/2*gif_width)))
+                        # Zona a sustituir del GIF si se sale
+                        gif_a = 0
+                        gif_b = gif_height
+                        gif_c = 0
+                        gif_d = gif_width
+                        if a == 0:
+                            gif_a = -int(np.floor(y - 3 / 4 * gif_height))
+                        gif_b = gif_a + b - a
+                        if c == 0:
+                            gif_c = -int(np.floor(x - 1 / 2 * gif_width))
+                        gif_d = gif_c + d - c
 
-                    # Zona a sustituir del gif si se sale
-                    gif_a = 0
-                    gif_b = gif_height
-                    gif_c = 0
-                    gif_d = gif_width
-                    if a == 0:
-                        gif_a = -int(np.floor(y-3/4*gif_height))
-                    gif_b = gif_a + b - a
-                    if c == 0:
-                        gif_c = -int(np.floor(x-1/2*gif_width))
-                    gif_d = gif_c + d - c
+                        gif_frame = gif_frame[gif_a:gif_b, gif_c:gif_d, :]
 
-                    gif_frame = gif_frame[gif_a:gif_b, gif_c:gif_d, :]
-                    # Superponer el gif sobre el framec
-                    alpha_s = gif_frame.min(axis=2) / 255.0
-                    alpha_s = cv.merge([alpha_s,alpha_s,alpha_s])
-                    alpha_l = 1.0 - alpha_s
-                    frame_[a:b, c:d, :] = (alpha_l * gif_frame) + (alpha_s * frame[a:b, c:d, :])
-                    
+                        # Superponer el GIF sobre el frame
+                        alpha_s = gif_frame.min(axis=2) / 255.0
+                        alpha_s = cv.merge([alpha_s, alpha_s, alpha_s])
+                        alpha_l = 1.0 - alpha_s
+                        frame_[a:b, c:d, :] = (alpha_l * gif_frame) + (alpha_s * frame[a:b, c:d, :])
+
                 self.pub.publish(self.br.cv2_to_imgmsg(frame_, encoding='rgb8'))
                 
             self.loop_rate.sleep()
-            
+
 if __name__ == '__main__':
     rospy.init_node("ar_addition", anonymous=True)
     my_node = Nodo()
