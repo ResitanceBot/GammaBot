@@ -4,10 +4,14 @@
     <include file="$(find astra_camera)/launch/astra.launch"/>
 
     <!-- AR node -->
-    <node name="AR_node" pkg="cnn_image_processing" type="AR_node.py" />
+    <node name="AR_node_aruco_positions" pkg="cnn_image_processing" type="AR_node_aruco_positions.py" />
 
     <!-- Prediction node base on model
     <node name="prediction_node" pkg="cnn_image_processing" type="prediction_node.py" />
+    -->
+
+    <!-- Depth node 
+    <node name="depth_node" pkg="cnn_image_processing" type="depth_node.py" />
     -->
     
     <!-- RVIZ -->
