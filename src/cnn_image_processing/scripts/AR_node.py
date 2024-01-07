@@ -33,6 +33,7 @@ class Nodo(object):
         rospy.loginfo('Starting AR node...')
         
         # Ruta del gif
+        # gif_path = r'/home/husarion/GammaBot/src/cnn_image_processing/resources/fire-png-gif-489.gif'
         gif_path = r'/home/husarion/GammaBot/src/cnn_image_processing/resources/fire-png-gif-489.gif'
         gif = imageio.get_reader(gif_path)
         gif_length = gif.get_length()
@@ -57,7 +58,7 @@ class Nodo(object):
                 # Detección de marcadores ArUco
                 markerCorners, markerIds, _ = detector.detectMarkers(frame)
                 #frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-
+                frame_ = frame.copy()
                 if markerIds is not None and 0 in markerIds:
                     # Obtener la posición del primer marcador detectado
                     index = list(markerIds).index(0)
@@ -101,9 +102,9 @@ class Nodo(object):
                     alpha_s = gif_frame.min(axis=2) / 255.0
                     alpha_s = cv.merge([alpha_s,alpha_s,alpha_s])
                     alpha_l = 1.0 - alpha_s
-                    frame[a:b, c:d, :] = (alpha_l * gif_frame) + (alpha_s * frame[a:b, c:d, :])
-            
-                self.pub.publish(self.br.cv2_to_imgmsg(frame, encoding='rgb8'))
+                    frame_[a:b, c:d, :] = (alpha_l * gif_frame) + (alpha_s * frame[a:b, c:d, :])
+                    
+                self.pub.publish(self.br.cv2_to_imgmsg(frame_, encoding='rgb8'))
                 
             self.loop_rate.sleep()
             

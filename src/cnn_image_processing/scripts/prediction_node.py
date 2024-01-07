@@ -15,10 +15,10 @@ class Nodo(object):
         self.loop_rate = rospy.Rate(10)
 
         # Subscribers
-        rospy.Subscriber("/camera/color/image_raw",Image,self.callback)
+        rospy.Subscriber("/ar_image",Image,self.callback)
 
         # Publishers
-        self.pub = rospy.Publisher('/test/camera_pub', Image,queue_size=10)
+        self.pub = rospy.Publisher('/pred_image', Image,queue_size=10)
 
         self.rf = Roboflow(api_key="GGxqvKnwaHYEl42XKsup")
         self.project = self.rf.workspace().project("fire-detection-for-khkt")
@@ -39,7 +39,7 @@ class Nodo(object):
             if self.image is not None:
                 rospy.loginfo('alo alo image')
                     # Realiza predicciones en el cuadro
-                predictions = self.model.predict(image_processed, confidence=18, overlap=30).json()
+                predictions = self.model.predict(image_processed, confidence=30, overlap=30).json()
 
                 # Imprime o procesa las predicciones según sea necesario
                 print(predictions)
