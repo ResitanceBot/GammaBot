@@ -1,0 +1,16 @@
+<launch>
+
+    <!-- Astra Camera -->
+    <include file="$(find astra_camera)/launch/astra.launch"/>
+
+    <!-- AR node -->
+    <node name="AR_node" pkg="cnn_image_processing" type="AR_node.py" />
+
+    <!-- Prediction node base on model
+    <node name="prediction_node" pkg="cnn_image_processing" type="prediction_node.py" />
+    -->
+    
+    <!-- RVIZ -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cnn_image_processing)/rviz/cnn.rviz" />
+
+</launch>
