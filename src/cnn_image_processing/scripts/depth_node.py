@@ -7,6 +7,18 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from cnn_image_processing.msg import ArucoCornerCoordinates # custom msg
+from math import asin, sin, degrees, radians
+
+def angular_position(shape,y,x,fov=(60,49.5)):
+    x_c = x-(shape[1]-1)/2
+    y_c = (shape[0]-1)/2-y
+    w_c = (shape[1]+1)/2
+    h_c = (shape[0]+1)/2
+    theta_max = fov[0]/2
+    phi_max = fov[1]/2
+    theta = degrees(asin(sin(radians(theta_max)/w_c*x_c)))
+    phi = degrees(asin(sin(radians(phi_max)/h_c*y_c)))
+    return theta,phi
 
 class Nodo(object):
     def __init__(self):
@@ -44,11 +56,21 @@ class Nodo(object):
                     y = int(self.aruco.corner.y)
                     width = int(self.aruco.width)
                     height = int(self.aruco.height)
+                    
                     image_depth = self.image.copy()
                     area_aruco = image_depth[y:y+height, x:x+width]
                     dist_media_aruco = np.mean(area_aruco)
+                    
+                    shape_img = (640, 480)
+                    x_center = x + width/2
+                    y_center = y + height/2
+                    angle_aruco = angular_position(shape_img,x_center,y_center)
+                    
                     print('Aruco ID:', self.aruco.aruco_id)
                     print('Distancia (cm):', int(dist_media_aruco/10))
+                    print('Pitch (º):', angle_aruco[0])
+                    print('Yaw (º):', angle_aruco[1])
+                    print('------------------------')
                     self.aruco = None
             
             self.loop_rate.sleep()
