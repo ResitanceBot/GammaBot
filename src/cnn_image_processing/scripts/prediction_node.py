@@ -20,9 +20,9 @@ class Nodo(object):
         # Publishers
         self.pub = rospy.Publisher('/pred_image', Image,queue_size=10)
 
-        self.rf = Roboflow(api_key="GGxqvKnwaHYEl42XKsup")
-        self.project = self.rf.workspace().project("fire-detection-for-khkt")
-        self.model = self.project.version(3).model
+        self.rf = Roboflow(api_key="kfUPSl1P18oLAiR9mImr")
+        self.project = self.rf.workspace().project("fire-vwrwq")
+        self.model = self.project.version(2).model
 
     def callback(self, msg):
         rospy.loginfo('Image received...')
