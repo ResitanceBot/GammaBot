@@ -14,6 +14,7 @@
 
   <!-- map_marker node -->
   <node pkg="map_marker" type="map_marker" name="map_marker" output="screen"/>
+  <node pkg="map_marker" type="marker_tf_broadcaster" name="marker_tf_broadcaster" output="screen"/>
 
   <!-- RVIZ -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find map_marker)/rviz/slam_marker.rviz" />
