@@ -4,6 +4,7 @@ actionlib_tutorials
 amcl
 angles
 astra_camera
+async_web_server_cpp
 base_local_planner
 bond
 bondcpp
@@ -15,6 +16,7 @@ catkin
 class_loader
 clear_costmap_recovery
 cmake_modules
+cnn_image_processing
 compressed_depth_image_transport
 compressed_image_transport
 control_msgs
@@ -78,6 +80,7 @@ laser_assembler
 laser_filters
 laser_geometry
 librviz_tutorial
+libuvc_camera
 map_msgs
 map_server
 media_export
@@ -93,6 +96,10 @@ navfn
 nodelet
 nodelet_topic_tools
 nodelet_tutorial_math
+openni2_camera
+openni2_launch
+openni_camera
+openni_launch
 openslam_gmapping
 pcl_conversions
 pcl_msgs
@@ -109,6 +116,7 @@ qt_gui_py_common
 qwt_dependency
 realtime_tools
 resource_retriever
+rgbd_launch
 robot_localization
 robot_state_publisher
 ros_environment
@@ -235,6 +243,7 @@ uuid_msgs
 visualization_marker_tutorials
 visualization_msgs
 voxel_grid
+web_video_server
 webkit_dependency
 xacro
 xmlrpcpp
