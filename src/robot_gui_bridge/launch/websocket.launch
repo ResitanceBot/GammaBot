@@ -1,3 +1,4 @@
 <launch>
   <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch"/>
+  <node name="webserver_initializer_script" pkg="robot_gui_bridge" type="http_webserver_initializer.sh" />
 </launch>
