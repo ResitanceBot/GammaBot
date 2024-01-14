@@ -7,6 +7,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from cnn_image_processing.msg import ArucoCornerCoordinates # custom msg
+from cnn_image_processing.msg import ArucoDistOri # custom msg
 from math import asin, sin, degrees, radians
 
 def angular_position(shape,y,x,fov=(60,49.5)):
@@ -34,7 +35,7 @@ class Nodo(object):
         rospy.Subscriber("/aruco_corners", ArucoCornerCoordinates, self.callback_aruco)
         
         # Publishers
-        self.pub = rospy.Publisher('/depth_image', Image,queue_size=10)
+        self.pub = rospy.Publisher('/aruco_dist_ori', ArucoDistOri, queue_size=10)
 
     def callback_img(self, msg):
         # rospy.loginfo('Depth Image received...')
@@ -50,7 +51,6 @@ class Nodo(object):
         while not rospy.is_shutdown():
             if self.image is not None:
                 # rospy.loginfo('-------------------')
-                # self.pub.publish(self.br.cv2_to_imgmsg(image_depth, encoding='16UC1'))
                 if self.aruco is not None:
                     x = int(self.aruco.corner.x)
                     y = int(self.aruco.corner.y)
@@ -71,6 +71,13 @@ class Nodo(object):
                     print('Pitch (º):', angle_aruco[0])
                     print('Yaw (º):', angle_aruco[1])
                     print('------------------------')
+                    
+                    aruco_msg = ArucoDistOri()
+                    aruco_msg.aruco_id = self.aruco.aruco_id
+                    aruco_msg.distance = int(dist_media_aruco)
+                    aruco_msg.angle = int(angle_aruco[1])
+                    self.pub.publish(aruco_msg)
+                    
                     self.aruco = None
             
             self.loop_rate.sleep()
