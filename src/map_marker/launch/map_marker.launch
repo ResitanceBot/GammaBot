@@ -1,0 +1,21 @@
+<launch>
+
+  <!-- all.launch (rosbot_ekf) -->
+  <include file="$(find rosbot_ekf)/launch/all.launch" />
+
+  <!-- LIDAR -->
+  <include file="$(find rplidar_ros)/launch/rplidar_a2m12.launch" />
+
+  <!-- GMAPPING -->
+  <include file="$(find tutorial_pkg)/launch/gmapping.launch" />
+
+  <!-- CNN -->
+  <include file="$(find cnn_image_processing)/launch/cnn.launch" />
+
+  <!-- map_marker node -->
+  <node pkg="map_marker" type="map_marker" name="map_marker" output="screen"/>
+
+  <!-- RVIZ -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find map_marker)/rviz/slam_marker.rviz" />
+
+</launch>

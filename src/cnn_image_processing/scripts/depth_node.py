@@ -66,11 +66,11 @@ class Nodo(object):
                     y_center = y + height/2
                     angle_aruco = angular_position(shape_img,x_center,y_center)
                     
-                    print('Aruco ID:', self.aruco.aruco_id)
-                    print('Distancia (cm):', int(dist_media_aruco/10))
-                    print('Pitch (º):', angle_aruco[0])
-                    print('Yaw (º):', angle_aruco[1])
-                    print('------------------------')
+                    # print('Aruco ID:', self.aruco.aruco_id)
+                    # print('Distancia (cm):', int(dist_media_aruco/10))
+                    # print('Pitch (º):', angle_aruco[0])
+                    # print('Yaw (º):', angle_aruco[1])
+                    # print('------------------------')
                     
                     aruco_msg = ArucoDistOri()
                     aruco_msg.aruco_id = self.aruco.aruco_id
