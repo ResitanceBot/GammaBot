@@ -1,8 +1,5 @@
 <launch>
 
-    <!-- Astra Camera -->
-    <include file="$(find astra_camera)/launch/astra.launch"/>
-
     <!-- AR node -->
     <node name="AR_node_aruco_positions" pkg="cnn_image_processing" type="AR_node_aruco_positions.py" />
 
