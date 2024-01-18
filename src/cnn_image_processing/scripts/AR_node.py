@@ -17,7 +17,7 @@ class Nodo(object):
         self.loop_rate = rospy.Rate(10)
 
         # Subscriptores
-        rospy.Subscriber("/camera/color/image_raw", Image, self.callback)
+        rospy.Subscriber("/camera/color/image_uncompressed", Image, self.callback)
 
         # Publicadores
         self.pub = rospy.Publisher('/ar_image', Image, queue_size=10)
@@ -47,7 +47,7 @@ class Nodo(object):
         self.marker_length = 0.1  # Ajusta según el tamaño real del marcador en metros
 
     def callback(self, msg):
-        self.image = self.br.imgmsg_to_cv2(msg)
+        self.image = self.br.imgmsg_to_cv2(msg, "rgb8")
 
     def start(self):
         rospy.loginfo('Starting AR node...')
