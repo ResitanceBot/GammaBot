@@ -10,11 +10,12 @@
     <node name="prediction_node" pkg="cnn_image_processing" type="prediction_node.py" />
     -->
     
-    <!-- Depth node 
+    <!-- Depth node -->
     <node name="depth_node" pkg="cnn_image_processing" type="depth_node.py" />
+    
+    
+    <!-- RVIZ 
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cnn_image_processing)/rviz/cnn.rviz" />
     -->
     
-    <!-- RVIZ -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cnn_image_processing)/rviz/cnn.rviz" />
-
 </launch>

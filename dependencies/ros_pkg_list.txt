@@ -81,6 +81,7 @@ laser_filters
 laser_geometry
 librviz_tutorial
 libuvc_camera
+map_marker
 map_msgs
 map_server
 media_export
@@ -117,6 +118,7 @@ qwt_dependency
 realtime_tools
 resource_retriever
 rgbd_launch
+robot_gui_bridge
 robot_localization
 robot_state_publisher
 ros_environment
@@ -165,6 +167,7 @@ rostime
 rostopic
 rosunit
 roswtf
+roswww
 rotate_recovery
 rplidar_ros
 rqt_action
