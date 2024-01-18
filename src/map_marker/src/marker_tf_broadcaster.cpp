@@ -5,12 +5,14 @@
 
 
 float x_from_base_link, y_from_base_link;
+bool aruco_received_flag = false;
 
 void arucoCallback(const cnn_image_processing::ArucoDistOri::ConstPtr &msg){
     int aruco_distance = msg->distance;
     int aruco_angle = msg->angle;
     x_from_base_link = (aruco_distance*cos(aruco_angle*M_PI/180.0))/1000.0;
     y_from_base_link = (aruco_distance*sin(aruco_angle*M_PI/180.0))/1000.0;
+    aruco_received_flag = true;
 }
 
 int main(int argc, char** argv)
@@ -28,11 +30,14 @@ int main(int argc, char** argv)
     while (ros::ok())
     {
         ros::spinOnce();
-        tf_base_link_to_marker.setOrigin(tf::Vector3(x_from_base_link,y_from_base_link,0.0));
-        q.setRPY(0, 0, M_PI);
-        tf_base_link_to_marker.setRotation(q);
-        tf_br.sendTransform(tf::StampedTransform(tf_base_link_to_marker, ros::Time::now(), "base_link", "marker"));
-        printf("alo");
+        if (aruco_received_flag)
+        {
+            aruco_received_flag = false;
+            tf_base_link_to_marker.setOrigin(tf::Vector3(x_from_base_link,y_from_base_link,0.0));
+            q.setRPY(0, 0, M_PI);
+            tf_base_link_to_marker.setRotation(q);
+            tf_br.sendTransform(tf::StampedTransform(tf_base_link_to_marker, ros::Time::now(), "base_link", "marker"));
+        }
 
         r.sleep();
     }

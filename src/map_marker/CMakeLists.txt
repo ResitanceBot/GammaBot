@@ -28,6 +28,6 @@ include_directories(
 )
 
 add_executable(map_marker src/map_marker.cpp)
-add_executable(marker_tf_broadcaster src/map_marker.cpp)
+add_executable(marker_tf_broadcaster src/marker_tf_broadcaster.cpp)
 target_link_libraries(map_marker ${catkin_LIBRARIES})
 target_link_libraries(marker_tf_broadcaster ${catkin_LIBRARIES})
