@@ -12,8 +12,7 @@
 
     <group if="$(arg localization)">
         <!-- Load map -->
-        <node name="map_server" pkg="map_server" type="map_server"
-            args="$(find tutorial_pkg)/maps/$(arg map_name)" respawn="true" />
+        <node name="map_server" pkg="map_server" type="map_server" args="$(find tutorial_pkg)/maps/$(arg map_name)" respawn="true" />
 
         <!-- AMCL localizer -->
         <node pkg="amcl" type="amcl" name="amcl" output="screen">
@@ -37,8 +36,10 @@
 
     <group if="$(arg markers)">
         <node pkg="map_marker" type="map_marker" name="map_marker" output="screen" />
-        <node pkg="map_marker" type="marker_tf_broadcaster" name="marker_tf_broadcaster"
-            output="screen" />
+        <node pkg="map_marker" type="marker_tf_broadcaster" name="marker_tf_broadcaster" output="screen" />
     </group>
+
+    <!-- RVIZ -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find map_marker)/rviz/slam_marker.rviz" />
 
 </launch>
