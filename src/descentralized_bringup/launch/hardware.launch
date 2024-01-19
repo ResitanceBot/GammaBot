@@ -1,0 +1,13 @@
+<launch>
+    
+    <!-- Motors (CORE2) -->
+    <include file="$(find rosbot_ekf)/launch/all.launch" />
+
+    <!-- Lidar -->
+    <include file="$(find rplidar_ros)/launch/rplidar_a2m12.launch" />
+
+    <!-- Astra Camera-->
+    <include file="$(find astra_camera)/launch/astra.launch" />
+    <node name="image_rt_compressor" pkg="image_transport" type="republish" args="raw in:=/camera/color/image_raw theora out:=/camera/color/image_compressed" />
+
+</launch>

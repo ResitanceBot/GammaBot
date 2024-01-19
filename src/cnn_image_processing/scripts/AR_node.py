@@ -6,6 +6,7 @@ from sensor_msgs.msg import Image
 import cv2 as cv
 import numpy as np
 import imageio
+from cnn_image_processing.msg import ArucoCornerCoordinates # custom msg
 
 class Nodo(object):
     def __init__(self):
@@ -16,19 +17,20 @@ class Nodo(object):
         self.loop_rate = rospy.Rate(10)
 
         # Subscriptores
-        rospy.Subscriber("/camera/color/image_raw", Image, self.callback)
+        rospy.Subscriber("/camera/color/image_uncompressed", Image, self.callback)
 
         # Publicadores
         self.pub = rospy.Publisher('/ar_image', Image, queue_size=10)
+        self.pub_aruco = rospy.Publisher('/aruco_corners', ArucoCornerCoordinates, queue_size=10)
 
         # Lista de códigos ArUco de interés
         self.aruco_codes = [0, 1, 2]  # IDs de los códigos ArUco de interés
 
         # Lista de rutas de los GIFs asociados a cada código ArUco
         self.gif_paths = [
-            r'/home/husarion/GammaBot/src/cnn_image_processing/resources/0.gif',
-            r'/home/husarion/GammaBot/src/cnn_image_processing/resources/1.gif',
-            r'/home/husarion/GammaBot/src/cnn_image_processing/resources/2.gif'
+            r'/home/lion/GammaBot/src/cnn_image_processing/resources/0.gif',
+            r'/home/lion/GammaBot/src/cnn_image_processing/resources/1.gif',
+            r'/home/lion/GammaBot/src/cnn_image_processing/resources/2.gif'
         ] 
 
         # Cargar los GIFs asociados a cada código ArUco
@@ -45,7 +47,7 @@ class Nodo(object):
         self.marker_length = 0.1  # Ajusta según el tamaño real del marcador en metros
 
     def callback(self, msg):
-        self.image = self.br.imgmsg_to_cv2(msg)
+        self.image = self.br.imgmsg_to_cv2(msg, "rgb8")
 
     def start(self):
         rospy.loginfo('Starting AR node...')
@@ -63,10 +65,23 @@ class Nodo(object):
                         # Obtener la posición del marcador detectado
                         idx = list(markerIds).index(aruco_code)
                         img_points = markerCorners[idx][0]
+                        
+                        # Publicacion de esquinas del codigo aruco
+                        aruco_msg = ArucoCornerCoordinates()
+                        aruco_msg.aruco_id = aruco_code
+                        aruco_msg.corner.x = img_points[0, 0]
+                        aruco_msg.corner.y = img_points[0, 1]
+                        aruco_msg.width = int(img_points[:, 0].max() - img_points[:, 0].min())
+                        aruco_msg.height = int(img_points[:, 1].max() - img_points[:, 1].min())
+                        self.pub_aruco.publish(aruco_msg)
 
                         # Obtener las dimensiones del GIF y ajustar su posición
-                        gif_height = int(img_points[:, 0].max() - img_points[:, 0].min()) * 4
-                        gif_width = int(img_points[:, 1].max() - img_points[:, 1].min()) * 4
+                        if aruco_code > 0: 
+                            mult_factor = 2
+                        else:
+                            mult_factor = 4
+                        gif_height = int(img_points[:, 0].max() - img_points[:, 0].min()) * mult_factor
+                        gif_width = int(img_points[:, 1].max() - img_points[:, 1].min()) * mult_factor
                         x, y = np.int32(img_points.mean(axis=0))
 
                         # Leer el siguiente fotograma del GIF
