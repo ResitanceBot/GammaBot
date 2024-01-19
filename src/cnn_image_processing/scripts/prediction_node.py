@@ -22,7 +22,7 @@ class Nodo(object):
 
         # Publishers
         self.pub = rospy.Publisher('/pred_image', Image,queue_size=10)
-        self.model = YOLO("runs/detect/yolov8n_custom/weights/best.pt")
+        self.model = YOLO("/home/lion/GammaBot/src/cnn_image_processing/scripts/runs/detect/yolov8n_custom/weights/best.pt")
 
          # customize the bounding box
         self.box_annotator = sv.BoxAnnotator(
@@ -32,7 +32,6 @@ class Nodo(object):
         )
 
     def callback(self, msg):
-        rospy.loginfo('Image received...')
         self.image = self.br.imgmsg_to_cv2(msg)
 
 
@@ -46,9 +45,10 @@ class Nodo(object):
             if self.image is not None:
                 
                 # Realiza predicciones en el cuadro
+                image_processed = cv2.cvtColor(image_processed, cv2.COLOR_BGR2RGB)
+
                 predictions = self.model(image_processed, agnostic_nms=True)[0]
-                detections = sv.Detections.from_yolov8(predictions) #from_ultralytics
-                print("detections", detections)
+                detections = sv.Detections.from_ultralytics(predictions)
 
                 # Dibuja cajas delimitadoras en el cuadro según las predicciones
                 labels = [
@@ -63,6 +63,7 @@ class Nodo(object):
                     ) 
 
                 #cv2.imshow("Imagen", self.image)
+                image_processed = cv2.cvtColor(image_processed, cv2.COLOR_RGB2BGR)
                 self.pub.publish(self.br.cv2_to_imgmsg(image_processed, encoding='rgb8'))
             self.loop_rate.sleep()
             
