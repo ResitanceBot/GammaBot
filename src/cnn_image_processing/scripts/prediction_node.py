@@ -37,17 +37,18 @@ class Nodo(object):
 
 
     def start(self):
-        rospy.loginfo("Timing images")
+        #rospy.loginfo("Timing images")
         #rospy.spin()
         while not rospy.is_shutdown():
-            rospy.loginfo('processing image')
+            #rospy.loginfo('processing image')
             #br = CvBridge()
             image_processed = self.image
             if self.image is not None:
                 
                 # Realiza predicciones en el cuadro
                 predictions = self.model(image_processed, agnostic_nms=True)[0]
-                detections = sv.Detections.from_yolov8(predictions)
+                detections = sv.Detections.from_yolov8(predictions) #from_ultralytics
+                print("detections", detections)
 
                 # Dibuja cajas delimitadoras en el cuadro según las predicciones
                 labels = [
