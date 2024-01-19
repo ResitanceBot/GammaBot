@@ -34,7 +34,7 @@
     <group if="$(arg CNN)">
         <include file="$(find cnn_image_processing)/launch/cnn.launch" />
         <node name="image_rt_uncompressor" pkg="image_transport" type="republish"
-            args="theora in:=/camera/color/image_compressed raw out:=/camera/color/image_uncompressed" />
+            args="compressed in:=/camera/color/image_compressed raw out:=/camera/color/image_uncompressed" />
     </group>
 
     <group if="$(arg markers)">

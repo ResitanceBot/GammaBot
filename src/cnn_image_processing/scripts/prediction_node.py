@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 import rospy
-from roboflow import Roboflow
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 import cv2
 import matplotlib.pyplot as plt
+import torch
+import supervision as sv
+from ultralytics import YOLO
+
 
 class Nodo(object):
     def __init__(self):
@@ -19,41 +22,48 @@ class Nodo(object):
 
         # Publishers
         self.pub = rospy.Publisher('/pred_image', Image,queue_size=10)
+        self.model = YOLO("/home/lion/GammaBot/src/cnn_image_processing/scripts/runs/detect/yolov8n_custom/weights/best.pt")
 
-        self.rf = Roboflow(api_key="kfUPSl1P18oLAiR9mImr")
-        self.project = self.rf.workspace().project("fire-vwrwq")
-        self.model = self.project.version(2).model
+         # customize the bounding box
+        self.box_annotator = sv.BoxAnnotator(
+            thickness=2,
+            text_thickness=2,
+            text_scale=1
+        )
 
     def callback(self, msg):
-        rospy.loginfo('Image received...')
         self.image = self.br.imgmsg_to_cv2(msg)
 
 
     def start(self):
-        rospy.loginfo("Timing images")
+        #rospy.loginfo("Timing images")
         #rospy.spin()
         while not rospy.is_shutdown():
-            rospy.loginfo('processing image')
+            #rospy.loginfo('processing image')
             #br = CvBridge()
             image_processed = self.image
             if self.image is not None:
-                rospy.loginfo('alo alo image')
-                    # Realiza predicciones en el cuadro
-                predictions = self.model.predict(image_processed, confidence=30, overlap=30).json()
+                
+                # Realiza predicciones en el cuadro
+                image_processed = cv2.cvtColor(image_processed, cv2.COLOR_BGR2RGB)
 
-                # Imprime o procesa las predicciones según sea necesario
-                print(predictions)
+                predictions = self.model(image_processed, agnostic_nms=True)[0]
+                detections = sv.Detections.from_ultralytics(predictions)
 
                 # Dibuja cajas delimitadoras en el cuadro según las predicciones
-                for prediction in predictions["predictions"]:
-                    xmin, ymin, xmax, ymax = (
-                        int(prediction["x"]),
-                        int(prediction["y"]),
-                        int(prediction["x"] + prediction["width"]),
-                        int(prediction["y"] + prediction["height"]),
-                    )
-                    cv2.rectangle(image_processed, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
+                labels = [
+                    f"{self.model.model.names[class_id]} {confidence:0.2f}"
+                    for _, _, confidence, class_id, _
+                    in detections
+                    ]
+                image_processed = self.box_annotator.annotate(
+                    scene=image_processed, 
+                    detections=detections, 
+                    labels=labels
+                    ) 
+
                 #cv2.imshow("Imagen", self.image)
+                image_processed = cv2.cvtColor(image_processed, cv2.COLOR_RGB2BGR)
                 self.pub.publish(self.br.cv2_to_imgmsg(image_processed, encoding='rgb8'))
             self.loop_rate.sleep()
             
