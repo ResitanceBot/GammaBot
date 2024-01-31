@@ -9,7 +9,7 @@
 
 <script type="text/javascript" type="text/javascript">
   var ros = new ROSLIB.Ros({
-    url : 'ws://100.111.19.36:9090'
+    url : 'ws://localhost:9090'
   });
 
   ros.on('connection', function() {
@@ -108,6 +108,6 @@
   <h1>Simple ROS User Interface</h1>
   <p>Connection status: <span id="status"></span></p>
   <div id="zone_joystick" style="position: relative;"></div>
-  <img src="http://100.111.19.36:8080/stream?topic=/camera/color/image_raw" alt="http://100.111.19.36:8080/stream?topic=/camera/color/image_raw">
+  <img src="http://localhost:8080/stream?topic=/pred_image" alt="http://localhost:8080/stream?topic=/pred_image">
 </body>
 </html>
