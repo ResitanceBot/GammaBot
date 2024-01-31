@@ -48,13 +48,12 @@ Website for monitoring and operation over all the Internet and with multi-plattf
 ##### GETTING STARTED
 Software development is divided into several ROS packages:
 + *descentralized_bringup*: Placeholder for programs launchfiles.
-+ *cnn_image_processing*: Augmented reality via ArUco detection + fire recognition model 
++ *cnn_image_processing*: Augmented reality via ArUco detection + fire recognition model + fire location estimation
 + *gamepad_controller*: Allow to control rosbot movement using a Xbox/PS4 controller device.
-+ *map_marker*: Fire location estimation and marker placement on map
-+ *robot_gui_bridge*:
++ *map_marker*: fire marker placement on map
++ *robot_gui_bridge*: Graphical interface webserver
 + *ros_astra_camera*: Low level controller for camera activation
 + *rosbot_ekf*: Low level motors sensor and extended Kalman Filter for fusion sensor
-+ *rosbot_webui*: Graphical interface webserver
 + *rplidar_ros*: Low level controller of LiDAR sensor
 + *tutorial_pkg*: Tutorial packages provided by manufacturer, modified for testing purposes.
 
