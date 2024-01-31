@@ -4,7 +4,8 @@
     <arg name="slam" default="false" />
     <arg name="CNN" default="true" />
     <arg name="markers" default="true" />
-
+    <arg name="gui_server" default="true" />
+    <arg name="move_base" default="false" />
 
     <group if="$(arg slam)">
         <include file="$(find tutorial_pkg)/launch/gmapping.launch" />
@@ -29,18 +30,38 @@
             <param name="initial_pose_y" value="0.0" />
             <param name="initial_pose_a" value="0.0" />
         </node>
+
+        <group if="$(arg move_base)">
+            <!-- Path planning -->
+            <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+                <rosparam file="$(find tutorial_pkg)/config/move_base.yaml" command="load" />
+                <rosparam file="$(find tutorial_pkg)/config/costmap_common.yaml" command="load"
+                    ns="global_costmap" />
+                <rosparam file="$(find tutorial_pkg)/config/costmap_common.yaml" command="load"
+                    ns="local_costmap" />
+                <rosparam file="$(find tutorial_pkg)/config/costmap_global.yaml" command="load" />
+                <rosparam file="$(find tutorial_pkg)/config/costmap_local.yaml" command="load" />
+                <rosparam file="$(find tutorial_pkg)/config/planner_global.yaml" command="load" />
+                <rosparam file="$(find tutorial_pkg)/config/planner_local.yaml" command="load" />
+            </node>
+        </group>
+
     </group>
 
     <group if="$(arg CNN)">
         <include file="$(find cnn_image_processing)/launch/cnn.launch" />
         <node name="image_rt_uncompressor" pkg="image_transport" type="republish"
-            args="theora in:=/camera/color/image_compressed raw out:=/camera/color/image_uncompressed" />
+            args="compressed in:=/camera/color/image_compressed raw out:=/camera/color/image_uncompressed" />
     </group>
 
     <group if="$(arg markers)">
         <node pkg="map_marker" type="map_marker" name="map_marker" output="screen" />
         <node pkg="map_marker" type="marker_tf_broadcaster" name="marker_tf_broadcaster"
             output="screen" />
+    </group>
+
+    <group if="$(arg gui_server)">
+        <include file="$(find robot_gui_bridge)/launch/websocket.launch" />
     </group>
 
     <!-- RVIZ -->
